@@ -17,7 +17,10 @@ $(document).ready(function(){
     , windowWidth = $(window).width()
     , windowHeight = $(window).height()
 
-    , tempNode;
+    , tempNode
+
+    , controlsReady = false
+    , controlsTO;
 
   
   currentSlideIndex = (function(){
@@ -27,6 +30,10 @@ $(document).ready(function(){
     }
     return 0;
   }());
+
+
+	slideLoop("slide-2");
+	slideLoop("slide-9");
 
 
   // set up slides / backgrounds
@@ -42,6 +49,7 @@ $(document).ready(function(){
     $backgrounds.append(el);
     $(this).css("background", "none");
   });
+
 
   $(window).resize(setSize);
 
@@ -68,19 +76,29 @@ $(document).ready(function(){
   });
 
 
+  Mousetrap.bind('?', function(e) {
+    if ($('.controls').is(':visible')) {
+      hideControlsAndWait();
+    } else {
+      $('.controls').fadeIn(250);
+    }
+    return false;
+  });
+
+  $('.controls .close').click(function() { $('.controls').fadeToggle(100); });
+  
+  $('.controls').hide().delay(2000).fadeToggle(500, function(){
+    controlsReady = true;
+  });
+
+
   setSize();
 
 
 
   var $prevSlide
-    , $currentSlide
-    , $nextSlide
-    , $prevSlideBackground
-    , $currentSlideBackground
-    , $nextSlideBackground
-    , prevSlideOffset
-    , currentSlideOffset
-    , nextSlideOffset;
+    , $currentSlide;
+
 
   function goToNextSlide() {
     scrollToSlide(currentSlideIndex + 1);
@@ -90,40 +108,53 @@ $(document).ready(function(){
     scrollToSlide(currentSlideIndex - 1);
   }
 
-  function updateSlides(index) {
+  function updateSlideIndicator() {
+    $('.slide-indicator').finish();
+    $('.slide-indicator').text( (currentSlideIndex + 1) + " / " + slides.length );
+    $('.slide-indicator').delay(500).fadeIn().delay(3000).fadeOut();
+  }
+
+  var updateSlideIndicatorDebounced = _.debounce(updateSlideIndicator, 300, true);
+
+  function hideControlsAndWait() {
+    if (!controlsReady) return;
+    $('.controls').fadeOut(250);
+    if (controlsTO) clearTimeout(controlsTO);
+    controlsTO = setTimeout(function() {
+      $('.controls').fadeIn(500);
+    }, 10 * 1000);
   }
 
   function scrollToSlide(index, speed) {
     var slide = slides[index];
     if (slide) {
+      hideControlsAndWait();
+
+      if (currentSlideIndex && currentSlideIndex !== index) $prevSlide = $('#'+slides[currentSlideIndex]);
+
       currentSlideIndex = index;
 
-      $prevSlide     = $('#'+slides[currentSlideIndex]    );
-      $currentSlide  = $('#'+slides[currentSlideIndex + 1]);
-      $nextSlide     = $('#'+slides[currentSlideIndex + 2]);
-
-      prevSlideOffset     = $prevSlide.length ? $prevSlide.offset().top : null;
-      currentSlideOffset  = $currentSlide.length ? $currentSlide.offset().top : null;
-      nextSlideOffset     = $nextSlide.length ? $nextSlide.offset().top : null;
-      
-      $prevSlideBackground     = $('#'+slides[currentSlideIndex]    +'-background');
-      $currentSlideBackground  = $('#'+slides[currentSlideIndex + 1]+'-background');
-      $nextSlideBackground     = $('#'+slides[currentSlideIndex + 2]+'-background');
+      $currentSlide = $('#'+slides[currentSlideIndex]);
 
       updateHash(slide);
 
       $backgrounds.stop();
-      $('body, html').stop();
+      $('body').stop();
 
       if (animatingTO) clearTimeout(animatingTO);
       isAnimating = true;
 
-      $('body, html').animate({
+      $('.slide-indicator').finish();
+
+      $('body').animate({
         scrollTop: slidePositions[_.indexOf(slides, slide)]
       }, {
         duration: typeof(speed) != 'undefined' ? speed : transitionFactor * 1400,
         easing: 'easeOutCubic',
         complete: function() {
+          if ($prevSlide) $prevSlide.trigger('leave');
+          $currentSlide.trigger('enter');
+          updateSlideIndicatorDebounced();
           animatingTO = setTimeout(function() {
             isAnimating = false;
           }, 500);
@@ -230,6 +261,8 @@ $(document).ready(function(){
     });
 
     if (parallax) {
+      $('body').css('overflow', 'hidden');
+      $('.controls').css('left', 'initial');
       setTimeout(function() {
         $('.slide > .container').each(function(){
           $(this).css({
@@ -237,6 +270,9 @@ $(document).ready(function(){
           });
         });
       }, 100);
+    } else {
+      $('body').css('overflow', 'initial');
+      $('.controls').css('left', '-1000px');
     }
 
     slidePositions = getSlidePositions(slides);
