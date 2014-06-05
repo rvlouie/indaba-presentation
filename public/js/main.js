@@ -20,7 +20,9 @@ $(document).ready(function(){
     , tempNode
 
     , controlsReady = false
-    , controlsTO;
+    , controlsTO
+
+    , documentTitle = $('title').text();
 
   
   currentSlideIndex = (function(){
@@ -111,7 +113,7 @@ $(document).ready(function(){
   function updateSlideIndicator() {
     $('.slide-indicator').finish();
     $('.slide-indicator').text( (currentSlideIndex + 1) + " / " + slides.length );
-    $('.slide-indicator').delay(500).fadeIn().delay(3000).fadeOut();
+    $('.slide-indicator').delay(250).fadeIn(1500).delay(2000).fadeOut(1500);
   }
 
   var updateSlideIndicatorDebounced = _.debounce(updateSlideIndicator, 300, true);
@@ -154,6 +156,11 @@ $(document).ready(function(){
         complete: function() {
           if ($prevSlide) $prevSlide.trigger('leave');
           $currentSlide.trigger('enter');
+          if ($currentSlide.attr('title')) {
+            $('title').text( $currentSlide.attr('title') + ' : ' + documentTitle );
+          } else {
+            $('title').text( documentTitle );
+          }
           updateSlideIndicatorDebounced();
           animatingTO = setTimeout(function() {
             isAnimating = false;
