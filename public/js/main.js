@@ -20,7 +20,6 @@ $(document).ready(function(){
     , tempNode
 
     , controlsReady = false
-    , controlsTO
 
     , documentTitle = $('title').text();
 
@@ -35,7 +34,7 @@ $(document).ready(function(){
 
 
 	slideLoop("slide-2");
-	slideLoop("slide-9");
+	slideLoop("slide-9", 5000);
 
 
   // set up slides / backgrounds
@@ -113,7 +112,7 @@ $(document).ready(function(){
   function updateSlideIndicator() {
     $('.slide-indicator').finish();
     $('.slide-indicator').text( (currentSlideIndex + 1) + " / " + slides.length );
-    $('.slide-indicator').delay(250).fadeIn(1500).delay(2000).fadeOut(1500);
+    $('.slide-indicator').delay(250).fadeIn(1000).delay(500).fadeOut(1500);
   }
 
   var updateSlideIndicatorDebounced = _.debounce(updateSlideIndicator, 300, true);
@@ -121,10 +120,6 @@ $(document).ready(function(){
   function hideControlsAndWait() {
     if (!controlsReady) return;
     $('.controls').fadeOut(250);
-    if (controlsTO) clearTimeout(controlsTO);
-    controlsTO = setTimeout(function() {
-      $('.controls').fadeIn(500);
-    }, 10 * 1000);
   }
 
   function scrollToSlide(index, speed) {
