@@ -37,6 +37,20 @@ $(document).ready(function(){
 	slideLoop("slide-9", 5000);
 
 
+  if (windowWidth < 800) {
+    $('body').css('overflow', 'auto');
+    $('.controls').hide();
+    $('.slide').css({
+      'background-size': '100% auto'
+    });
+    $('.slide .container').css({
+      'border-top': '5px solid #000',
+      'border-bottom': '50px solid #000'
+    });
+    return;
+  }
+
+
   // set up slides / backgrounds
   $('.slide').each(function(i) {
     var el = $(document.createElement('div'));
@@ -246,6 +260,9 @@ $(document).ready(function(){
   }
 
   function setSize() {
+    if (windowWidth == $(window).width() &&
+        windowHeight == $(window).height()) return;
+
     windowWidth = $(window).width();
     windowHeight = $(window).height();
 
