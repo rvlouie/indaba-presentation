@@ -38,7 +38,7 @@ $(document).ready(function(){
 
 
   if (windowWidth < 800) {
-    $('body').css('overflow', 'auto');
+    $('body,html').css('overflow', 'auto');
     $('.controls').hide();
     $('.slide').css({
       'background-size': '100% auto'
@@ -107,7 +107,7 @@ $(document).ready(function(){
   });
 
 
-  setSize();
+  setSize(true);
 
 
 
@@ -150,14 +150,14 @@ $(document).ready(function(){
       updateHash(slide);
 
       $backgrounds.stop();
-      $('body').stop();
+      $('body,html').stop();
 
       if (animatingTO) clearTimeout(animatingTO);
       isAnimating = true;
 
       $('.slide-indicator').finish();
 
-      $('body').animate({
+      $('body,html').animate({
         scrollTop: slidePositions[_.indexOf(slides, slide)]
       }, {
         duration: typeof(speed) != 'undefined' ? speed : transitionFactor * 1400,
@@ -259,8 +259,9 @@ $(document).ready(function(){
     }));
   }
 
-  function setSize() {
-    if (windowWidth == $(window).width() &&
+  function setSize(initial) {
+    if (!initial &&
+        windowWidth == $(window).width() &&
         windowHeight == $(window).height()) return;
 
     windowWidth = $(window).width();
@@ -280,7 +281,7 @@ $(document).ready(function(){
     });
 
     if (parallax) {
-      $('body').css('overflow', 'hidden');
+      $('body,html').css('overflow', 'hidden');
       $('.controls').css('left', 'initial');
       setTimeout(function() {
         $('.slide > .container').each(function(){
@@ -290,7 +291,7 @@ $(document).ready(function(){
         });
       }, 100);
     } else {
-      $('body').css('overflow', 'initial');
+      $('body,html').css('overflow', 'initial');
       $('.controls').css('left', '-1000px');
     }
 
