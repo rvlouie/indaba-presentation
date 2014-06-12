@@ -255,13 +255,11 @@ $(document).ready(function(){
 
 
   function getSlidePositions(as) {
-    return _.unique(_.collect(as, function(slide) {
-      if (slide) {
-        return $('#'+slide).offset().top;
-      } else {
-        return 0;
-      }
-    }));
+    var positions = [];
+    _.each(as, function(el, i) {
+      positions.push( i * windowHeight );
+    });
+    return positions;
   }
 
   function setSize(initial) {
