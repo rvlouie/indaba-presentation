@@ -12,11 +12,22 @@ body {
   height: 100%;
 }
 
-body {
+html {
   width: 100%;
-	color: black;
-  overflow: hidden;
 }
+
+body {
+  positon: relative;
+	color: black;
+}
+
+#wrapper {
+  overflow: auto;
+  position:absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+} 
 
 p {
 	font-family: 'Helvetica', "Arial", sans-serif;

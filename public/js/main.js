@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
-  var $slides = $('.slides')
+  var $wrapper = $('#wrapper')
+    , $slides = $('.slides')
     , $backgrounds = $('.backgrounds')
   
     , animatingTO
@@ -11,7 +12,7 @@ $(document).ready(function(){
     , slides = _.collect($('.slide'), function(el){ return el.getAttribute('id'); })
     , slidePositions
     
-    , currentSlideIndex
+    , currentSlideIndex = getSlideIndexFromHash()
 
     , pos = $(window).scrollTop()
     , windowWidth = $(window).width()
@@ -23,14 +24,14 @@ $(document).ready(function(){
 
     , documentTitle = $('title').text();
 
-  
-  currentSlideIndex = (function(){
+
+  function getSlideIndexFromHash() {
     if (window.location.hash) {
       var matchedSlideIndex = _.indexOf(slides, window.location.hash.replace('#', ''));
       if (matchedSlideIndex != -1) return matchedSlideIndex;
     }
     return 0;
-  }());
+  }
 
 
 	slideLoop("slide-2");
@@ -38,7 +39,7 @@ $(document).ready(function(){
 
 
   if (windowWidth < 800) {
-    $('body,html').css('overflow', 'auto');
+    $wrapper.css('overflow', 'auto');
     $('.controls').hide();
     $('.slide').css({
       'background-size': '100% auto'
@@ -65,6 +66,10 @@ $(document).ready(function(){
     $(this).css("background", "none");
   });
 
+
+  $(window).on('hashchange', function() {
+    scrollToSlide(getSlideIndexFromHash());
+  });
 
   $(window).resize(setSize);
 
@@ -150,14 +155,14 @@ $(document).ready(function(){
       updateHash(slide);
 
       $backgrounds.stop();
-      $('body,html').stop();
+      $wrapper.stop();
 
       if (animatingTO) clearTimeout(animatingTO);
       isAnimating = true;
 
       $('.slide-indicator').finish();
 
-      $('body,html').animate({
+      $wrapper.animate({
         scrollTop: slidePositions[_.indexOf(slides, slide)]
       }, {
         duration: typeof(speed) != 'undefined' ? speed : transitionFactor * 1400,
@@ -281,7 +286,7 @@ $(document).ready(function(){
     });
 
     if (parallax) {
-      $('body,html').css('overflow', 'hidden');
+      $wrapper.css('overflow', 'hidden');
       $('.controls').css('left', 'initial');
       setTimeout(function() {
         $('.slide > .container').each(function(){
@@ -291,7 +296,7 @@ $(document).ready(function(){
         });
       }, 100);
     } else {
-      $('body,html').css('overflow', 'initial');
+      $wrapper.css('overflow', 'initial');
       $('.controls').css('left', '-1000px');
     }
 
