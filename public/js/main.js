@@ -143,7 +143,7 @@ $(document).ready(function(){
 
       $('.slide-indicator').finish();
 
-      $('body').animate({
+      $($.browser.webkit ? "body" : "body, html").animate({
         scrollTop: slidePositions[_.indexOf(slides, slide)]
       }, {
         duration: typeof(speed) != 'undefined' ? speed : transitionFactor * 1400,
@@ -263,7 +263,7 @@ $(document).ready(function(){
     });
 
     if (parallax) {
-      $('body').css('overflow', 'hidden');
+      $($.browser.webkit ? "body" : "body, html").css('overflow', 'hidden');
       $('.controls').css('left', 'initial');
       setTimeout(function() {
         $('.slide > .container').each(function(){
@@ -273,7 +273,7 @@ $(document).ready(function(){
         });
       }, 100);
     } else {
-      $('body').css('overflow', 'initial');
+      $($.browser.webkit ? "body" : "body, html").css('overflow', 'initial');
       $('.controls').css('left', '-1000px');
     }
 
